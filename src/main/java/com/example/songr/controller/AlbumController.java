@@ -1,6 +1,8 @@
 package com.example.songr.controller;
 
+import com.example.songr.exception.AlbumNotFound;
 import com.example.songr.models.Album;
+import com.example.songr.models.Song;
 import com.example.songr.repositres.AlbumJpa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,10 +50,20 @@ public class AlbumController {
         return new RedirectView("albums");
 
     }
+
+
 //    @DeleteMapping("/albums/{albumId}")
 //    public RedirectView deleteAlbum(@PathVariable Long albumId) {
 //        albumJpa.deleteById(albumId);
 //        return new RedirectView("/albums");
 //    }
+@GetMapping("/albums/{albumId}")
+    public String viewAlbum(@PathVariable Long albumId,Model model){
+    Album album = albumJpa.findById(albumId)
+            .orElseThrow(() -> new AlbumNotFound("Could not find the album in the database"));
 
+    model.addAttribute("album", album);
+    model.addAttribute("songs", album.getSongs());
+    return "album_details.html";
+}
 }
